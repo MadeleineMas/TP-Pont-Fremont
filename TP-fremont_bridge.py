@@ -80,4 +80,57 @@ data = data[data.index <= "2017-01-01 00:00:00"]
 
 ############ évolution annuelle
 
-data.resample("1d").sum().rolling(365).sum()
+data.resample("1d").sum().rolling(365).sum().plot( # on indique que on fait la somme sur les jours, pour chaque année
+    figsize = (12,4), 
+    title="évolution anuelle", 
+    ylim=0) # on indique que l'axe des y doit commencer a 0
+plt.show()
+
+########### profil journalier moyen
+
+data.groupby(data.index.time).sum().plot( # on indique que on veut s'interesser aux heures de passage (de maniere indépendante de la date)
+    figsize = (12,4),                     # on fait la somme des valeurs pour avoir le profil sur une suele journée
+    title="profil journalier moyen" 
+)
+plt.show()
+
+########### une courbe par jour : la pivot_table
+
+pivoted = data.pivot_table('Total', index= data.index.time, columns=data.index.date).plot( # on crée notre tableau qui prend en ligne les heures de la journée et en colonne les differentes journées
+    legend = None, # on lui dit de ne pas afficher la légende qui est énooorme
+    alpha = 0.01, # on baisse l'opacité des courbes pour faire apparaître les tendances par superpositions
+    figsize = (12,4),  # on va obtenir un graphique de plein de courbe ressemblant au graphique précédent (lui faisait la somme de toutes les courbes affichées là)
+    title ="une courbe par jour"
+)
+pivoted
+plt.show()
+
+########### classification des jours
+
+pca_input = data.pivot_table('Total', index= data.index.time, columns=data.index.date).T.fillna(0).plot( # on fait la transposé de la matrice d'avant et on rempli par des zeros les cellules sans information
+    legend = None, 
+    alpha = 0.5,
+    figsize = (12,4),
+    title = "classification des jours"
+)
+pca_input
+plt.show()
+
+########### ACP
+
+from sklearn.decomposition import PCA
+
+PCA(n_components = 2).fit_transform(pca_input)
+
+########### Gaussian mixture
+
+
+
+
+
+
+
+
+
+
+
